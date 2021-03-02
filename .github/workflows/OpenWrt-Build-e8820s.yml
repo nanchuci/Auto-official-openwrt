@@ -12,8 +12,8 @@ on:
   #      - '.config'
   schedule:
      - cron: 0 0 3/3 * *
-  watch:
-    types: started
+  # watch:
+  #   types: started
 
 # 环境定义
 env:
@@ -88,7 +88,7 @@ jobs:
         if: env.PKG_LIENOL == 'true' && env.REPO_URL != 'https://github.com/Lienol/openwrt.git'
         run: |
           cd openwrt
-          echo "src-git yfdoor9 https://github.com/Lienol/openwrt-package" >> feeds.conf.default
+          echo "src-git nanchuci9 https://github.com/Lienol/openwrt-package" >> feeds.conf.default
 
       # 自定插件
       - name: Download My Package
@@ -117,7 +117,7 @@ jobs:
       # SSH连接
       - name: SSH Connection
         if: env.SSH_ACTION == 'true'
-        uses: yfdoor/debugger-action@master
+        uses: nanchuci/debugger-action@master
 
       # 下载依赖
       - name: Make Download
@@ -150,11 +150,11 @@ jobs:
           zip -r OpenWrt_Packages.zip -s 100m packages
           zip -r OpenWrt_Targets.zip -s 100m targets
           git init
-          git config user.name "yfdoor"
-          git config user.email "yfdoor@github.com"
+          git config user.name "nanchuci"
+          git config user.email "nanchuci@github.com"
           git add .
           git commit -m "Update OpenWrt_"$CONF_FILE
-          git push --force --quiet https://$GITHUB_TOKEN@github.com/yfdoor/OpenWrt.git HEAD:OpenWrt_$CONF_FILE
+          git push --force --quiet https://$GITHUB_TOKEN@github.com/nanchuci/OpenWrt.git HEAD:OpenWrt_$CONF_FILE
 
       # 准备固件
       - name: Organize Artifact
@@ -193,7 +193,7 @@ jobs:
             5、分支：${{ env.REPO_BRANCH }}
             6、Lean's package option：${{ env.PKG_LEAN }}
             7、Lienol's package option：${{ env.PKG_LIENOL }}
-            -- Build by YFDOOR @ with Github Action on ${{ env.RELEASE_DATE }}
+            -- Build by nanchuci @ with Github Action on ${{ env.RELEASE_DATE }}
             -- Automated build | 自动编译
           draft: false
           prerelease: false
@@ -207,5 +207,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ./openwrt/bin/OpenWrt_Firmware.zip
-          asset_name: OpenWrt_YFDOOR_${{ env.CONF_FILE }}_${{ env.RELEASE_DATE }}.zip
+          asset_name: OpenWrt_nanchuci_${{ env.CONF_FILE }}_${{ env.RELEASE_DATE }}.zip
           asset_content_type: application/zip
