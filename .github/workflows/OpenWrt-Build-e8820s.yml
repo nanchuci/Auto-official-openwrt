@@ -135,71 +135,74 @@ jobs:
           echo "::set-output name=status::success"
 
      # 更新分支
-      - name: Upload Branch
-        if: env.UPLOAD_BRANCH == 'true' && steps.compile.outputs.status == 'success'
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
-        run: |
-          cd openwrt/bin
-          zip -r OpenWrt_Packages.zip -s 100m packages
-          zip -r OpenWrt_Targets.zip -s 100m targets
-          git init
-          git config user.name "nanchuci"
-          git config user.email "nanchuci@github.com"
-          git add .
-          git commit -m "Update OpenWrt_"$CONF_FILE
-          git push --force --quiet https://$GITHUB_TOKEN@github.com/nanchuci/OpenWrt.git HEAD:OpenWrt_$CONF_FILE
+    - name: Upload bin directory
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: openwrt/bin
 
-      # 准备固件
-      - name: Organize Artifact
-        if: steps.compile.outputs.status == 'success'
-        run: |
-          cd openwrt/bin
-          find ./targets/ -type d -name "packages" | xargs rm -rf {}
-          zip -r OpenWrt_Firmware.zip targets
-          date=$(TZ=UTC-8 date +"%Y.%m.%d")
-          echo "RELEASE_DATE=$date" >> $GITHUB_ENV
-          # echo ::set-env name=RELEASE_DATE::"$(TZ=UTC-8 date +"%Y.%m.%d")"
+    - name: Organize files
+      id: organize
+      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      run: |
+        cd openwrt/bin/targets/*/*
+        rm -rf packages
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "::set-output name=status::success"
+    - name: Upload firmware directory
+      uses: actions/upload-artifact@main
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      with:
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE }}
 
-      # 上传固件
-      - name: Upload Artifact
-        uses: actions/upload-artifact@main
-        if: env.UPLOAD_FIRMWARE == 'true' && steps.compile.outputs.status == 'success'
-        with:
-          name: OpenWrt_Firmware_${{ env.CONF_FILE }}
-          path: ./openwrt/bin/targets/
+    - name: Upload firmware to cowtransfer
+      id: cowtransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+    - name: Upload firmware to WeTransfer
+      id: wetransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
+        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+    - name: Generate release tag
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+        touch release.txt
+        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
+        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
+        echo "::set-output name=status::success"
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: ${{ env.FIRMWARE }}/*
 
-      # 创建发行
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@main
-        if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success'
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
-        with:
-          tag_name: ${{ env.RELEASE_DATE }}_TAG
-          release_name: OpenWrt_${{ env.CONF_FILE }}_${{ env.RELEASE_DATE }}
-          body: |
-            1、本固件为自动编译
-            2、发行版中只提供完整的固件
-            3、需要单独IPK请到分支下载
-            4、源码：${{ env.REPO_URL }}
-            5、分支：${{ env.REPO_BRANCH }}
-            6、Lean's package option：${{ env.PKG_LEAN }}
-            7、Lienol's package option：${{ env.PKG_LIENOL }}
-            -- Build by nanchuci @ with Github Action on ${{ env.RELEASE_DATE }}
-            -- Automated build | 自动编译
-          draft: false
-          prerelease: false
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
 
-      # 上传发行
-      - name: Upload Release
-        uses: actions/upload-release-asset@main
-        if: env.UPLOAD_RELEASE == 'true' && steps.compile.outputs.status == 'success'
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./openwrt/bin/OpenWrt_Firmware.zip
-          asset_name: OpenWrt_nanchuci_${{ env.CONF_FILE }}_${{ env.RELEASE_DATE }}.zip
-          asset_content_type: application/zip
+    - name: Remove old Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 3
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
