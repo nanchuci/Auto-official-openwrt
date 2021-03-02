@@ -31,7 +31,6 @@ env:
   CONF_FILE: e8820s
   PKG_LEAN: true
   PKG_LIENOL: true
-  SSH_ACTION: false
   UPLOAD_BRANCH: true
   UPLOAD_RELEASE: false
   UPLOAD_FIRMWARE: true
@@ -113,11 +112,6 @@ jobs:
           cd openwrt
           ../script/$DIY1_FILE
           make defconfig
-
-      # SSH连接
-      - name: SSH Connection
-        if: env.SSH_ACTION == 'true'
-        uses: nanchuci/debugger-action@master
 
       # 下载依赖
       - name: Make Download
