@@ -40,7 +40,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
@@ -70,12 +70,12 @@ jobs:
 
      # 下载插件
       - name: Download Lean Package
-        if: env.PKG_LEAN == 'true' && env.REPO_URL != 'https://github.com/coolsnowwolf/lede.git'
+        if: env.PKG_LEAN == 'true' && env.REPO_URL != 'https://github.com/nanchuci/lede.git'
         run: |
           cd openwrt
           sudo rm -rf package/lean
           mkdir -p package/lean
-          svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/ package/lean
+          svn checkout https://github.com/nanchuci/lede/trunk/package/lean/ package/lean
           sudo rm -rf package/lean/.svn/
 
           mkdir -p tools/ucl && wget -P tools/ucl https://raw.githubusercontent.com/coolsnowwolf/lede/master/tools/ucl/Makefile 
