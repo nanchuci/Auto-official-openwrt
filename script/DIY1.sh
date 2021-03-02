@@ -1,6 +1,6 @@
 #/bin/bash
 # This is free software, lisence use MIT.
-# Copyright (C) https://github.com/yfdoor
+# Copyright (C) https://github.com/nanchuci
 
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.123.1/g' package/base-files/files/bin/config_generate
@@ -24,7 +24,7 @@ sed -i 's/OpenWrt_5G/ZTE-E8820S-5G/g' package/lean/mt-drivers/mt_wifi/files/mt76
 #rm -rf ./package/base-files/files/etc/banne && cd .. && cp -f ./banner openwrt/package/base-files/files/etc/ && cd openwrt
 
 # 更改时区
-sed -i "s/'UTC'/'CST-8'\n        set system.@system[-1].zonename='Asia\/Shanghai'/g" package/base-files/files/bin/config_generate
+#sed -i "s/'UTC'/'CST-8'\n        set system.@system[-1].zonename='Asia\/Shanghai'/g" package/base-files/files/bin/config_generate
 
 # Define Default
 cat > package/lean/default-settings/files/zzz-default-settings <<-EOF
