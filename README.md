@@ -1,2 +1,2 @@
 # Auto-official-openwrt
-# E8820S
+# build ZTE-E8820S on official-openwrt by nanchuci
