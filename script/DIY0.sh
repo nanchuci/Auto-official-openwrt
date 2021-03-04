@@ -3,9 +3,9 @@
 # Copyright (C) https://github.com/nanchuci
 
 # Define My Package
-git clone https://github.com/yfdoor/OpenWrt-AdGuardHome.git                         package/nanchuciadguardhome
-git clone https://github.com/rufengsuixing/luci-app-adguardhome.git                 package/nanchuci/luci-app-adguardhome
-git clone https://github.com/fw876/helloworld.git                                   package/nanchuci/luci-app-ssr-plus
+#git clone https://github.com/yfdoor/OpenWrt-AdGuardHome.git                         package/nanchuciadguardhome
+#git clone https://github.com/rufengsuixing/luci-app-adguardhome.git                 package/nanchuci/luci-app-adguardhome
+#git clone https://github.com/fw876/helloworld.git                                   package/nanchuci/luci-app-ssr-plus
 
 # Add luci-theme-argon
 git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
