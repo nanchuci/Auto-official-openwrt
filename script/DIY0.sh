@@ -12,5 +12,8 @@ git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
 rm -rf ../lean/luci-theme-argon
 
 #mt-wifi
-svn co https://github.com/nanchuci/openwrt-packages/trunk/luci-app-mtwifi package/lean/luci-app-mtwifi
-svn co https://github.com/nanchuci/openwrt-packages/trunk/mt-drivers package/lean/mt-drivers
+#svn co https://github.com/nanchuci/openwrt-packages/trunk/luci-app-mtwifi package/lean/luci-app-mtwifi
+#svn co https://github.com/nanchuci/openwrt-packages/trunk/mt-drivers package/lean/mt-drivers
+
+#package/lean
+svn co https://github.com/nanchuci/lede/trunk/package/lean package/lean
