@@ -9,7 +9,7 @@
 #代码里有 name: 后面的内容随便改,冒号后面是有个空格的,如果修改固件名字就要考虑能不能显示出你想要的
 
 
-name: OpenWrt-msg1500 闭源超精简固件
+name: OpenWrt-msg1500 闭源固件
 
 on: 
   release:
@@ -39,7 +39,7 @@ on:
 
 
 env:
-  REPO_URL: https://github.com/nanchuci/lede
+  REPO_URL: https://github.com/nanchuci/lede1
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/msg1500.config
@@ -152,7 +152,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: msg1500-超精简
+        name: msg1500-闭源
         path: ${{ env.FIRMWARE }}
 
     - name: 上传固件到奶牛快传
