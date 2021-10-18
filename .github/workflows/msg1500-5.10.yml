@@ -43,8 +43,8 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/msg1500-xiao.config
-  DIY_P1_SH: scripts/diy-part1.sh
-  DIY_P2_SH: scripts/diy-part3.sh
+  DIY_P1_SH: script/diy-part1.sh
+  DIY_P2_SH: script/diy-part3.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: true
@@ -95,6 +95,13 @@ jobs:
 
     - name: 部署feeds
       run: cd openwrt && ./scripts/feeds install -a
+
+    - name: 再次下载安装feeds
+      run: |
+        cd openwrt
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
     - name: 加载.config设置
       run: |
         [ -e files ] && mv files openwrt/files
