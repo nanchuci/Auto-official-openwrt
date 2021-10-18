@@ -20,13 +20,13 @@ sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/kernel/mac80211/files/lib/wifi/m
 
 # 修改闭源驱动2G wifi名称
 sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/lean/mt/drivers/mt_wifi/files/mt7615.1.2G.dat
-sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/lean/MTK7615-DBDC-LINUX5.4/drivers/mt_wifi/files/mt7615.1.2G.dat
+#sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/lean/MTK7615-DBDC-LINUX5.4/drivers/mt_wifi/files/mt7615.1.2G.dat
 sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/lean/mt/drivers/mt_wifi/files/mt7615.2G.dat
 sed -i 's/OpenWRT-2.4G/RAISECOM-MSG1500/g' package/lean/mt/drivers/mt7615d/files/lib/wifi/mt_dbdc.sh
 
 # 修改闭源驱动5G wifi名称
 sed -i 's/OpenWrt_5G/RAISECOM-MSG1500-5G-$/g' package/lean/mt/drivers/mt_wifi/files/mt7615.1.5G.dat
-sed -i 's/OpenWrt_5G/RAISECOM-MSG1500-5G-$/g' package/lean/MTK7615-DBDC-LINUX5.4/drivers/mt_wifi/files/mt7615.1.5G.dat
+#sed -i 's/OpenWrt_5G/RAISECOM-MSG1500-5G-$/g' package/lean/MTK7615-DBDC-LINUX5.4/drivers/mt_wifi/files/mt7615.1.5G.dat
 sed -i 's/OpenWrt_5G/RAISECOM-MSG1500-5G-$/g' package/lean/mt/drivers/mt_wifi/files/mt7615.5G.dat
 sed -i 's/OpenWRT-5G/RAISECOM-MSG1500-5G/g' package/lean/mt/drivers/mt7615d/files/lib/wifi/mt_dbdc.sh
 
@@ -42,12 +42,18 @@ sed -i 's/5.4/5.10/g' target/linux/ramips/Makefile
 # 更改时区
 sed -i "s/'UTC'/'CST-8'\n        set system.@system[-1].zonename='Asia\/Shanghai'/g" package/base-files/files/bin/config_generate
 
+#修正连接数
+sed -i '/customized in this file/a net.netfilter.nf_conntrack_max=165535' package/base-files/files/etc/sysctl.conf
+
 # Clone community packages to package/community
 mkdir package/community
 pushd package/community
 
 # Add Lienol's Packages
 #git clone --depth=1 https://github.com/Lienol/openwrt-package
+
+# Add luci-app-advanced
+#git clone --depth=1 https://github.com/sirpdboy/luci-app-advanced
 
 # Add dnsfilter
 git clone --depth=1 https://github.com/garypang13/luci-app-dnsfilter
@@ -56,28 +62,28 @@ git clone --depth=1 https://github.com/garypang13/luci-app-dnsfilter
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
 
 # Add luci-app-vssr <M>
-git clone --depth=1 https://github.com/jerrykuku/lua-maxminddb.git
-git clone --depth=1 https://github.com/jerrykuku/luci-app-vssr
+#git clone --depth=1 https://github.com/jerrykuku/lua-maxminddb.git
+#git clone --depth=1 https://github.com/jerrykuku/luci-app-vssr
 
 # Add mentohust & luci-app-mentohust
-git clone --depth=1 https://github.com/BoringCat/luci-app-mentohust
-git clone --depth=1 https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk
+#git clone --depth=1 https://github.com/BoringCat/luci-app-mentohust
+#git clone --depth=1 https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk
 
-# Add minieap & luci-proto-minieap
-git clone --depth=1 https://github.com/ysc3839/luci-proto-minieap
-svn co https://github.com/project-openwrt/openwrt/trunk/package/ntlf9t/minieap
+# Add iptvhelper & luci-app-iptvhelper
+svn co https://github.com/kiddin9/openwrt-packages/trunk/iptvhelper
+svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-iptvhelper
 
 # Add ServerChan
-git clone --depth=1 https://github.com/tty228/luci-app-serverchan
+#git clone --depth=1 https://github.com/tty228/luci-app-serverchan
 
 # Add OpenClash
-git clone --depth=1 -b master https://github.com/vernesong/OpenClash
+#git clone --depth=1 -b master https://github.com/vernesong/OpenClash
 
 # Add luci-app-onliner (need luci-app-nlbwmon)
 git clone --depth=1 https://github.com/rufengsuixing/luci-app-onliner
 
 # Add luci-app-adguardhome
-git clone --depth=1 https://github.com/SuLingGG/luci-app-adguardhome
+#git clone --depth=1 https://github.com/SuLingGG/luci-app-adguardhome
 
 # Add luci-app-diskman
 git clone --depth=1 https://github.com/SuLingGG/luci-app-diskman
@@ -90,7 +96,7 @@ cp luci-app-diskman/Parted.Makefile parted/Makefile
 #git clone --depth=1 https://github.com/lisaac/luci-lib-docker
 
 # Add luci-app-gowebdav
-git clone --depth=1 https://github.com/project-openwrt/openwrt-gowebdav
+#git clone --depth=1 https://github.com/project-openwrt/openwrt-gowebdav
 
 # Add luci-app-nat6-helper
 git clone --depth=1 https://github.com/Ausaci/luci-app-nat6-helper
@@ -104,25 +110,14 @@ rm -rf ../lean/luci-theme-argon
 git clone --depth=1 -b openwrt-18.06 https://github.com/shiyu1314/luci-theme-rosy
 rm -rf ../lean/luci-theme-rosy
 
-# Use immortalwrt's luci-app-netdata
-#rm -rf ../lean/luci-app-netdata
-#svn co https://github.com/immortalwrt/immortalwrt/trunk/package/ntlf9t/luci-app-netdata
-
 # Add tmate
 git clone --depth=1 https://github.com/project-openwrt/openwrt-tmate
 
 # Add subconverter
 git clone --depth=1 https://github.com/tindy2013/openwrt-subconverter
 
-# Add gotop
-svn co https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/gotop
-
-# Add smartdns
-svn co https://github.com/pymumu/smartdns/trunk/package/openwrt ../smartdns
-svn co https://github.com/project-openwrt/openwrt/trunk/package/ntlf9t/luci-app-smartdns ../luci-app-smartdns
-
 # Add luci-udptools
-git clone --depth=1 https://github.com/zcy85611/openwrt-luci-kcp-udp
+#git clone --depth=1 https://github.com/zcy85611/openwrt-luci-kcp-udp
 
 # Add OpenAppFilter
 git clone --depth=1 https://github.com/destan19/OpenAppFilter
@@ -136,17 +131,19 @@ git clone --depth=1 https://github.com/destan19/OpenAppFilter
 #popd
 
 # Add netdata
-#pushd feeds/packages/admin
-#rm -rf netdata
-#svn co https://github.com/immortalwrt/packages/trunk/admin/netdata
-#popd
+rm -rf ../lean/netdata
+svn co https://github.com/sirpdboy/sirpdboy-package/trunk/netdata
+
+# luci-app-netdata
+rm -rf ../lean/luci-app-netdata
+git clone --depth=1 https://github.com/sirpdboy/luci-app-netdata
 
 # Mod zzz-default-settings
-pushd package/lean/default-settings/files
-sed -i '/http/d' zzz-default-settings
-export orig_version="$(cat "zzz-default-settings" | grep DISTRIB_REVISION= | awk -F "'" '{print $2}')"
-sed -i "s/${orig_version}/${orig_version} ($(date +"%Y-%m-%d"))/g" zzz-default-settings
-popd
+#pushd package/lean/default-settings/files
+#sed -i '/http/d' zzz-default-settings
+#export orig_version="$(cat "zzz-default-settings" | grep DISTRIB_REVISION= | awk -F "'" '{print $2}')"
+#sed -i "s/${orig_version}/${orig_version} ($(date +"%Y-%m-%d"))/g" zzz-default-settings
+#popd
 
 # Fix libssh
 #pushd feeds/packages/libs
@@ -155,16 +152,16 @@ popd
 #popd
 
 # Use Lienol's https-dns-proxy package
-pushd feeds/packages/net
-rm -rf https-dns-proxy
-svn co https://github.com/Lienol/openwrt-packages/trunk/net/https-dns-proxy
-popd
+#pushd feeds/packages/net
+#rm -rf https-dns-proxy
+#svn co https://github.com/Lienol/openwrt-packages/trunk/net/https-dns-proxy
+#popd
 
 # Use snapshots syncthing package
-pushd feeds/packages/utils
-rm -rf syncthing
-svn co https://github.com/openwrt/packages/trunk/utils/syncthing
-popd
+#pushd feeds/packages/utils
+#rm -rf syncthing
+#svn co https://github.com/openwrt/packages/trunk/utils/syncthing
+#popd
 
 # Fix mt76 wireless driver
 #pushd package/kernel/mt76
@@ -177,5 +174,6 @@ popd
 #make && sudo make install
 #popd
 
-# Change default shell to zsh
-#sed -i 's/\/bin\/ash/\/usr\/bin\/zsh/g' package/base-files/files/etc/passwd
+#添加smartdns
+git clone https://github.com/pymumu/openwrt-smartdns package/smartdns
+git clone -b lede https://github.com/pymumu/luci-app-smartdns.git package/luci-app-smartdns
