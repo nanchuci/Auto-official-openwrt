@@ -5,15 +5,13 @@ name: OpenWrt-Build-e8820s
 
 # 触发条件
 on:
-  #  push:
-  #    branches:
-  #      - master
-  #    paths:
-  #      - '.config'
-  schedule:
-     - cron: 0 0 3/3 * *
-  watch:
-    types: started
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
 
 # 环境定义
 env:
@@ -114,7 +112,12 @@ jobs:
           cd openwrt
           ../script/$DIY1_FILE
           make defconfig
-
+      - name: SSH远程连接服务器配置固件
+        uses: P3TERX/ssh2actions@v1.0.0
+        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'ture') || contains(github.event.action, 'ssh')
+        env:
+                TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+                TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       # 下载依赖
       - name: Make Download
         run: |
