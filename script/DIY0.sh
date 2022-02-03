@@ -17,3 +17,5 @@ rm -rf ../lean/luci-theme-argon
 
 #package/lean
 svn co https://github.com/nanchuci/lede/trunk/package/lean package/lean
+sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
+sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default
