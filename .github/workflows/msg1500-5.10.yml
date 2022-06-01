@@ -39,22 +39,22 @@ on:
 
 
 env:
-  REPO_URL: https://github.com/nanchuci/lede1
-  REPO_BRANCH: master
+  REPO_URL: https://github.com/nanchuci/immortalwrt
+  REPO_BRANCH: openwrt-18.06-k5.4
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/msg1500-xiao.config
   DIY_P1_SH: script/diy-part1.sh
-  DIY_P2_SH: script/diy-part3.sh
+  DIY_P2_SH: script/diy-part2.sh
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: true
+  UPLOAD_COWTRANSFER: flase
   UPLOAD_WETRANSFER: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
 jobs:
   build:
-    name: 编译OpenWrt-lede固件
+    name: 编译OpenWrt固件
     runs-on: ubuntu-20.04
 
     steps:
@@ -128,7 +128,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j2 || make -j2 V=s
+        make -j$(nproc) || make -j1 || make -j1 V=s
         echo "::set-output name=status::success"
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -167,14 +167,6 @@ jobs:
         name: msg1500-5.10内核固件
         path: ${{ env.FIRMWARE }}
 
-    - name: 上传固件到奶牛快传
-      id: cowtransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
     - name: 上传固件到WeTransfer
       id: wetransfer
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()

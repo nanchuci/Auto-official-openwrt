@@ -13,25 +13,19 @@
 sed -i 's/192.168.1.1/192.168.123.1/g' package/base-files/files/bin/config_generate
 
 # 修改主机名字，把MSG1500修改你喜欢的就行（不能纯数字或者使用中文）
-sed -i 's/OpenWrt/MSG1500/g' package/base-files/files/bin/config_generate
+sed -i 's/ImmortalWrt/MSG1500/g' package/base-files/files/bin/config_generate
 
 # 修改开源驱动wifi名称
-sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
+#sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
 
 # 修改闭源驱动2G wifi名称
-sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/lean/mt/drivers/mt_wifi/files/mt7615.1.2G.dat
-#sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/lean/MTK7615-DBDC-LINUX5.4/drivers/mt_wifi/files/mt7615.1.2G.dat
-sed -i 's/OpenWrt/RAISECOM-MSG1500-$/g' package/lean/mt/drivers/mt_wifi/files/mt7615.2G.dat
-sed -i 's/OpenWRT-2.4G/RAISECOM-MSG1500/g' package/lean/mt/drivers/mt7615d/files/lib/wifi/mt_dbdc.sh
+sed -i 's/OpenWRT-2.4G/MSG1500/g' package/kernel/mt-drivers/mt7615d/files/lib/wifi/mt_dbdc.sh
 
 # 修改闭源驱动5G wifi名称
-sed -i 's/OpenWrt_5G/RAISECOM-MSG1500-5G-$/g' package/lean/mt/drivers/mt_wifi/files/mt7615.1.5G.dat
-#sed -i 's/OpenWrt_5G/RAISECOM-MSG1500-5G-$/g' package/lean/MTK7615-DBDC-LINUX5.4/drivers/mt_wifi/files/mt7615.1.5G.dat
-sed -i 's/OpenWrt_5G/RAISECOM-MSG1500-5G-$/g' package/lean/mt/drivers/mt_wifi/files/mt7615.5G.dat
-sed -i 's/OpenWRT-5G/RAISECOM-MSG1500-5G/g' package/lean/mt/drivers/mt7615d/files/lib/wifi/mt_dbdc.sh
+sed -i 's/OpenWRT-5G/MSG1500-5G/g' package/kernel/mt-drivers/mt7615d/files/lib/wifi/mt_dbdc.sh
 
-# 设置密码为空（安装固件时无需密码登陆，然后自己修改想要的密码）
-#sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' ./package/lean/default-settings/files/zzz-default-settings
+# 添加个性信息
+#sed -i 's/22.5.5/22.5.5 by nanchuci/g' ./package/lean/default-settings/files/zzz-default-settings
 
 # 修改banne文件（banne文件在根目录）（不要修改此行代码,怕弄的diy-lede.sh文件全失效,不需要的话前面加#，或者全行代码删除了）
 #rm -rf ./package/base-files/files/etc/banne && cd .. && cp -f ./banner openwrt/package/base-files/files/etc/ && cd openwrt
@@ -49,13 +43,14 @@ pushd package/community
 # Add Lienol's Packages
 #git clone --depth=1 https://github.com/Lienol/openwrt-package
 
-# Add luci-app-advanced
-#git clone --depth=1 https://github.com/sirpdboy/luci-app-advanced
+# Add luci-app-eqos
+svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-eqos
 
 # Add dnsfilter
 git clone --depth=1 https://github.com/garypang13/luci-app-dnsfilter
 
 # Add luci-app-passwall
+svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-app-passwall
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
 
 # Add luci-app-vssr <M>
@@ -66,12 +61,21 @@ git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
 #git clone --depth=1 https://github.com/BoringCat/luci-app-mentohust
 #git clone --depth=1 https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk
 
+# Add lua-ipops
+svn co https://github.com/x-wrt/com.x-wrt/trunk/lua-ipops
+
+# Add luci-app-natflow-users
+svn co https://github.com/x-wrt/com.x-wrt/trunk/luci-app-natflow-users
+
+# Add natflow
+svn co https://github.com/x-wrt/com.x-wrt/trunk/natflow
+
 # Add iptvhelper & luci-app-iptvhelper
 svn co https://github.com/kiddin9/openwrt-packages/trunk/iptvhelper
 svn co https://github.com/kiddin9/openwrt-packages/trunk/luci-app-iptvhelper
 
-# Add ServerChan
-#git clone --depth=1 https://github.com/tty228/luci-app-serverchan
+# Add luci-app-gpsysupgrade
+#svn co https://github.com/kiddin9/my-packages/trunk/luci-app-gpsysupgrade
 
 # Add OpenClash
 #git clone --depth=1 -b master https://github.com/vernesong/OpenClash
@@ -92,20 +96,21 @@ cp luci-app-diskman/Parted.Makefile parted/Makefile
 #git clone --depth=1 https://github.com/KFERMercer/luci-app-dockerman
 #git clone --depth=1 https://github.com/lisaac/luci-lib-docker
 
-# Add luci-app-gowebdav
-#git clone --depth=1 https://github.com/project-openwrt/openwrt-gowebdav
+# Add luci-app-store
+#svn co https://github.com/linkease/istore/trunk/luci/luci-app-store
 
 # Add luci-app-nat6-helper
 git clone --depth=1 https://github.com/Ausaci/luci-app-nat6-helper
 
 # Add luci-theme-argon
-git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
-git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config
-rm -rf ../lean/luci-theme-argon
+#cd lede/package/lean
+#rm -rf luci-theme-argon 
+#git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
+#git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config
 
 # Add luci-theme-rosy
-git clone --depth=1 -b openwrt-18.06 https://github.com/shiyu1314/luci-theme-rosy
-rm -rf ../lean/luci-theme-rosy
+#git clone --depth=1 -b openwrt-18.06 https://github.com/shiyu1314/luci-theme-rosy
+#rm -rf ../lean/luci-theme-rosy
 
 # Add tmate
 git clone --depth=1 https://github.com/project-openwrt/openwrt-tmate
@@ -128,12 +133,12 @@ git clone --depth=1 https://github.com/destan19/OpenAppFilter
 #popd
 
 # Add netdata
-rm -rf ../lean/netdata
-svn co https://github.com/sirpdboy/sirpdboy-package/trunk/netdata
+#rm -rf ../lean/netdata
+#svn co https://github.com/sirpdboy/sirpdboy-package/trunk/netdata
 
 # luci-app-netdata
-rm -rf ../lean/luci-app-netdata
-git clone --depth=1 https://github.com/sirpdboy/luci-app-netdata
+#rm -rf ../lean/luci-app-netdata
+#git clone --depth=1 https://github.com/sirpdboy/luci-app-netdata
 
 # Mod zzz-default-settings
 #pushd package/lean/default-settings/files
@@ -172,5 +177,5 @@ git clone --depth=1 https://github.com/sirpdboy/luci-app-netdata
 #popd
 
 #添加smartdns
-git clone https://github.com/pymumu/openwrt-smartdns package/smartdns
-git clone -b lede https://github.com/pymumu/luci-app-smartdns.git package/luci-app-smartdns
+#git clone https://github.com/pymumu/openwrt-smartdns package/smartdns
+#git clone -b lede https://github.com/pymumu/luci-app-smartdns.git package/luci-app-smartdns
