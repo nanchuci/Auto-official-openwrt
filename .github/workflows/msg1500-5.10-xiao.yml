@@ -39,8 +39,8 @@ on:
 
 
 env:
-  REPO_URL: https://github.com/nanchuci/immortalwrt
-  REPO_BRANCH: openwrt-18.06-k5.4
+  REPO_URL: https://github.com/nanchuci/openwrt
+  REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/msg1500-xiao.config
   DIY_P1_SH: script/diy-part1.sh
